@@ -1,0 +1,26 @@
+#!/bin/bash
+# Miscellaneous functions
+
+set -e -o pipefail
+
+[[ -z "$1" ]] && exit 1
+
+upkeep () {
+	lwatch "$@" find ~ ~/.config ~/.local/share -mindepth 1 -maxdepth 1 \! -type l
+}
+
+rmjunk () {
+	misc upkeep | sed -n 's/^> //p' | cat <(echo ~/.cache) - | xargs -I{} -p rm -rf {}
+}
+
+randstr () {
+	local len="${1:-6}"
+
+	[[ "$len" =~ ^[0-9]+$ ]] || exit 1
+	for (( i=0; i < len; i++ ))
+	do
+		echo $((RANDOM % 26 + 65))
+	done | awk '{ printf "%c", $1 } END { printf "\n" }'
+}
+
+"$1" "${@:2}"

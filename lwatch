@@ -1,0 +1,85 @@
+#!/bin/bash
+# Long watch
+
+set -e -o pipefail
+
+finish () {
+	rm -f "$tmp"
+	if [[ ! -s "$file" ]]
+	then
+		rm -f "$file"
+	fi
+}
+
+trap finish EXIT
+
+[[ -z "$1" ]] && exit 1
+
+dir=~/.lwatch
+interactive=0
+update=0
+print=0
+
+while :
+do
+	case "$1" in
+	-d) [[ -n "$2" ]] && { dir="$2"; shift; } || exit 1 ;;
+	-i) interactive=1 ;;
+	-u) update=1 ;;
+	-p) print=1 ;;
+	--) shift; break ;;
+	-?*) ;;
+	*) break ;;
+	esac
+
+	shift
+done
+
+[[ -x "$(command -v "$1")" ]] || exit 1
+
+mkdir -p -- "$dir"
+cd "$dir"
+
+file=
+part="$(md5sum - <<<"$*" | cut -d ' ' -f 1 | cut -c -10)"
+for (( i=0; ; i++ ))
+do
+	file="${part}${i}"
+	if [[ -r "$file" ]]
+	then
+		if [[ "$(head -n 1 "$file")" = "$*" ]]
+		then
+			# $file exists and matches
+			break
+		fi
+		# $file exists but doesn't match
+	else
+		# $file doesn't exist; create it
+		echo "$*" >"$file"
+		break
+	fi
+done
+
+# When we get out of the loop, $file matches
+if ((print))
+then
+	echo "$dir/$file"
+	exit
+fi
+
+tmp="$(mktemp)"
+"$@" >"$tmp"
+diff <(tail -n +2 "$file") "$tmp" || true
+
+# interactive takes precendence over update
+if ((interactive))
+then
+	read -r -p 'Update? '
+	if [[ "$REPLY" = [yY]* ]]
+	then
+		cat <(echo "$*") "$tmp" >"$file"
+	fi
+elif ((update))
+then
+	cat <(echo "$*") "$tmp" >"$file"
+fi

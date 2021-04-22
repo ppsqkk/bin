@@ -1,0 +1,9 @@
+#!/bin/bash
+# Toggle the taskbar
+
+if pgrep tint2 >/dev/null
+then
+	killall tint2
+else
+	tint2 &
+fi

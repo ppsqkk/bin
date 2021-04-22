@@ -1,0 +1,10 @@
+#!/bin/bash
+# Prevent screen locker activation
+
+set -e -o pipefail
+
+while :
+do
+	xdotool mousemove 0 0 mousemove restore
+	sleep 60
+done
