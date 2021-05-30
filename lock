@@ -22,5 +22,6 @@ onunlock () {
 }
 
 onlock
-i3lock -n -i "$(find "$(xdg-user-dir DESKTOP)"/screensaver -mindepth 1 | randln)"
+tmp="$(find "$(xdg-user-dir DESKTOP)"/screensaver -mindepth 1 | randln)"
+i3lock -n -i "$tmp"
 onunlock

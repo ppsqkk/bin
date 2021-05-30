@@ -1,0 +1,4 @@
+#!/bin/bash
+# Check for junk in home directory
+
+lwatch "$@" find ~ ~/.config ~/.local/share -mindepth 1 -maxdepth 1 \! -type l
