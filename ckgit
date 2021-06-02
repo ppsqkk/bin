@@ -1,0 +1,21 @@
+#!/bin/bash
+# Check git status
+
+set -e -o pipefail
+
+for d in "$@"
+do
+	if ! { [[ -d "$d" ]] && [[ -d "$d/.git" ]]; }
+	then
+		continue
+	fi
+
+	stat="$(cd "$d" && git status -b --porcelain=2)"
+	if [[ -z "$(sed '/^#/d' <<<"$stat")" ]] &&
+	   [[ "$(sed -n '/^# branch\.ab/p' <<<"$stat")" = *'+0 -0' ]]
+	then
+		continue
+	fi
+
+	(cd "$d" && pwd)
+done
