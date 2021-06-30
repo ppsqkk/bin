@@ -1,0 +1,65 @@
+#!/bin/bash
+# Move and resize a window
+#
+# Select a target region by clicking twice. Double-clicking in the same
+# location will move the window to that location without resizing it. Right
+# clicking or otherwise interrupting the selection allows exact values to be
+# entered (see parse_wg and main).
+#
+# Requires: dmenu, slop, xdotool
+
+set -e -o pipefail
+
+# Parse xdotool getwindowgeometry output into the format '%x %y %w %h'
+parse_wg () {
+	[[ -z "$1" ]] && return 1
+
+	local tmp
+	tmp="$(xdotool getwindowgeometry "$id" | awk 'NR >= 2 { print $2 }')"
+
+	# tmp is split according to IFS, and the resulting fields are passed as
+	# arguments to echo. Arguments to echo are printed with a single space
+	# between them; this effectively replaces all runs of one or more
+	# IFS delimiters (except the last) with a single space.
+	echo $tmp | sed 's/[,x]/ /g'
+}
+
+# If the given x-coordinate is a literal 'x', the current x-coordinate is
+# preserved, and likewise for y-coordinate == 'y', width == 'w', and height ==
+# 'h'. xdotool windowmove partially supports this, but the implementation is
+# buggy.
+#
+# If the width and height are at or below a certain tolerance, they are ignored.
+main () {
+	(($# < 5)) && return 1
+
+	local t=50
+
+	local id x y w h
+	id="$1"; shift
+	x="$1"; shift
+	y="$1"; shift
+	w="$1"; shift
+	h="$1"; shift
+
+	local ox oy ow oh
+	read -r ox oy ow oh < <(parse_wg "$id") || true
+
+	[[ "$x" = x ]] && x="$ox"
+	[[ "$y" = y ]] && y="$oy"
+	[[ "$w" = w ]] && w="$ow"
+	[[ "$h" = h ]] && h="$oh"
+
+	# --sync prevents two window commands from interfering with each other
+	((w > t)) && ((h > t)) && xdotool windowsize --sync "$id" "$w" "$h"
+	xdotool windowmove --sync "$id" "$x" "$y"
+	return 0
+}
+
+id="${1:-"$(xdotool getwindowfocus)"}"
+
+if ! main "$id" $(slop -t 0 -f '%x %y %w %h' -D)
+then
+	sleep 0.1	# required for rofi's dmenu mode
+	main "$id" $(dmenu -p "$(parse_wg "$id")" -l 0)
+fi
