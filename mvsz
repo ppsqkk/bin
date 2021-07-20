@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Move and resize a window
 #
 # Select a target region by clicking twice. Double-clicking in the same

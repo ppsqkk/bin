@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Interactively remove junk in home directory
 
 upkeep | sed -n 's/^> //p' | cat <(echo ~/.cache) - | xargs -I{} -p rm -rf {}

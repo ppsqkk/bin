@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Send keys to all tmux panes
 
 set -e -o pipefail

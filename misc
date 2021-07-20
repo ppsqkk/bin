@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Miscellaneous functions
 
 set -e -o pipefail

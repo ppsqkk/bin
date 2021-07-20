@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Print a random line from stdin or the file given by the first argument
 
 set -e -o pipefail
