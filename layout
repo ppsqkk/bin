@@ -29,6 +29,17 @@ save () {
     done < <(xdotool search --all --desktop "$desktop" --name '')
 }
 
+timeout () {
+    for (( i=0; i < 5; i++ ))
+    do
+        if "$@"
+        then
+            break
+        fi
+        sleep 1
+    done
+}
+
 load () {
     exec 0< "$dir/$1"
 
@@ -38,10 +49,13 @@ load () {
         IFS=' ' read -r -a a <<<"$REPLY"
 
         "${a[@]:4}" &
-        id="$(xdotool search --sync --all --pid "$!" --name '')"
+        id="$(timeout xdotool search --all --pid "$!" --name '')"
 
-        xdotool windowsize --sync "$id" "${a[@]:2:2}"
-        xdotool windowmove --sync "$id" "${a[@]:0:2}"
+        if [[ "$id" ]]
+        then
+            xdotool windowsize --sync "$id" "${a[@]:2:2}"
+            xdotool windowmove --sync "$id" "${a[@]:0:2}"
+        fi
     done
 }
 
