@@ -7,11 +7,11 @@ set -e -o pipefail
 
 tmux lsp -F '#{pane_id} #{pane_pid}' | while read -r
 do
-	x=($REPLY)
+    x=($REPLY)
 
-	if [[ "$(ps --no-header -p "${x[1]}" -o cmd)" = "$SHELL" ]] &&
-	   ! pgrep -P "${x[1]}" >/dev/null
-	then
-		tmux send-keys -t "${x[0]}" "$*" Enter
-	fi
+    if [[ "$(ps --no-header -p "${x[1]}" -o cmd)" = "$SHELL" ]] &&
+       ! pgrep -P "${x[1]}" >/dev/null
+    then
+        tmux send-keys -t "${x[0]}" "$*" Enter
+    fi
 done

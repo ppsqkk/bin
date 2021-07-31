@@ -5,44 +5,44 @@ set -e -o pipefail
 
 # Parse xdotool getwindowgeometry output into the format '%x %y %w %h'
 parse_wg () {
-	[[ -z "$1" ]] && return 1
+    [[ -z "$1" ]] && return 1
 
-	local tmp
-	tmp="$(xdotool getwindowgeometry "$id" | awk 'NR >= 2 { print $2 }')"
+    local tmp
+    tmp="$(xdotool getwindowgeometry "$id" | awk 'NR >= 2 { print $2 }')"
 
-	# tmp is split according to IFS, and the resulting fields are passed as
-	# arguments to echo. Arguments to echo are printed with a single space
-	# between them; this effectively replaces all runs of one or more IFS
-	# delimiters (except the last) with a single space.
-	echo $tmp | sed 's/[,x]/ /g'
+    # tmp is split according to IFS, and the resulting fields are passed as
+    # arguments to echo. Arguments to echo are printed with a single space
+    # between them; this effectively replaces all runs of one or more IFS
+    # delimiters (except the last) with a single space.
+    echo $tmp | sed 's/[,x]/ /g'
 }
 
 save () {
-	exec 1> "$dir/$1"
+    exec 1> "$dir/$1"
 
-	local desktop id args
-	desktop="$(xdotool get_desktop)"
-	while read -r id
-	do
-		args="$(ps --no-header -o args "$(xdotool getwindowpid "$id")")"
-		echo "$(parse_wg "$id")" "$args"
-	done < <(xdotool search --all --desktop "$desktop" --name '')
+    local desktop id args
+    desktop="$(xdotool get_desktop)"
+    while read -r id
+    do
+        args="$(ps --no-header -o args "$(xdotool getwindowpid "$id")")"
+        echo "$(parse_wg "$id")" "$args"
+    done < <(xdotool search --all --desktop "$desktop" --name '')
 }
 
 load () {
-	exec 0< "$dir/$1"
+    exec 0< "$dir/$1"
 
-	local a id
-	while read -r
-	do
-		IFS=' ' read -r -a a <<<"$REPLY"
+    local a id
+    while read -r
+    do
+        IFS=' ' read -r -a a <<<"$REPLY"
 
-		"${a[@]:4}" &
-		id="$(xdotool search --sync --all --pid "$!" --name '')"
+        "${a[@]:4}" &
+        id="$(xdotool search --sync --all --pid "$!" --name '')"
 
-		xdotool windowsize --sync "$id" "${a[@]:2:2}"
-		xdotool windowmove --sync "$id" "${a[@]:0:2}"
-	done
+        xdotool windowsize --sync "$id" "${a[@]:2:2}"
+        xdotool windowmove --sync "$id" "${a[@]:0:2}"
+    done
 }
 
 (($# < 2)) && exit 1
@@ -51,14 +51,14 @@ dir=~/.layout
 
 while :
 do
-	case "$1" in
-	-d) [[ -n "$2" ]] && { dir="$2"; shift; } || exit 1 ;;
-	--) shift; break ;;
-	-?*) ;;
-	*) break ;;
-	esac
+    case "$1" in
+    -d) [[ -n "$2" ]] && { dir="$2"; shift; } || exit 1 ;;
+    --) shift; break ;;
+    -?*) ;;
+    *) break ;;
+    esac
 
-	shift
+    shift
 done
 
 mkdir -p -- "$dir"

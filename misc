@@ -6,21 +6,21 @@ set -e -o pipefail
 [[ -z "$1" ]] && exit 1
 
 awake () {
-	while :
-	do
-		xdotool mousemove 0 0 mousemove restore
-		sleep 60
-	done
+    while :
+    do
+        xdotool mousemove 0 0 mousemove restore
+        sleep 60
+    done
 }
 
 randstr () {
-	local len="${1:-6}"
+    local len="${1:-6}"
 
-	[[ "$len" =~ ^[0-9]+$ ]] || exit 1
-	for (( i=0; i < len; i++ ))
-	do
-		echo $((RANDOM % 26 + 65))
-	done | awk '{ printf "%c", $1 } END { printf "\n" }'
+    [[ "$len" =~ ^[0-9]+$ ]] || exit 1
+    for (( i=0; i < len; i++ ))
+    do
+        echo $((RANDOM % 26 + 65))
+    done | awk '{ printf "%c", $1 } END { printf "\n" }'
 }
 
 "$1" "${@:2}"

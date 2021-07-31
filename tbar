@@ -3,7 +3,7 @@
 
 if pgrep tint2 >/dev/null
 then
-	killall tint2
+    killall tint2
 else
-	tint2 &
+    tint2 &
 fi

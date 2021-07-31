@@ -5,13 +5,13 @@ set -e -o pipefail
 
 if [[ -n "$1" ]] && [[ -r "$1" ]]
 then
-	exec 0< "$1"
+    exec 0< "$1"
 fi
 
 : '
 if [[ -n "$1" ]] && [[ -r "$1" ]]
 then
-	exec randline <"$1"
+    exec randline <"$1"
 fi
 '
 
@@ -19,7 +19,7 @@ lines=()
 
 while read -r
 do
-	lines+=("$REPLY")
+    lines+=("$REPLY")
 done
 
 echo "${lines[$RANDOM % ${#lines[@]}]}"
