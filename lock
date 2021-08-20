@@ -24,7 +24,7 @@ onunlock () {
 onlock
 
 tmp="$(mktemp --suffix=.png)"
-magick x:root "$tmp"
+flameshot full -r >"$tmp"
 magick \
 "$tmp" -blur 10x5 \
 "$(xdg-user-dir DESKTOP)"/lock.png -gravity center \
