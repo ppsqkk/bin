@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Expand text
+
+cat "$@" | dmenu | cut -f 2- -d ' ' | xclip -r
