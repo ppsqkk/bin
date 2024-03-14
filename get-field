@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+left=' '
+mid='[0-9]\+'
+
+while getopts "l:m:r:" opt; do
+    case "$opt" in
+        l) left="$OPTARG" ;;
+        m) mid="$OPTARG" ;;
+        r) right="$OPTARG"; right_set=true ;;
+    esac
+done
+shift $((OPTIND - 1))
+[[ -z "$1" ]] && exit 1
+
+if [[ "$right_set" != true ]]; then
+    right="$left"
+fi
+
+regex="^.*$left\\($mid\\)$right.*$"
+repl='\1'
+
+# echo "$regex"
+sed "s/$regex/$repl/" <<<"$1"

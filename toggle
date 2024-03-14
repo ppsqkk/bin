@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+[[ -z "$1" ]] && exit 1
+
+cmd="$1"
+pids=($(pgrep -f "$cmd"))
+pids=(${pids[@]//$$}) # remove the current process
+if [[ "${#pids[@]}" -gt 1 ]]; then
+    notify-send "Too many processes match \"$cmd\""
+elif [[ "${#pids[@]}" -eq 1 ]]; then
+    notify-send "Killing $cmd"
+    kill "${pids[0]}"
+else
+    notify-send "Running $cmd"
+    exec $cmd
+fi

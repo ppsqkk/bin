@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# TODO: add "aliases"
+
+ANKI_SCRIPT="hotkey.py -f"
+cmds=(
+    '$ANKI_SCRIPT fix_sent_and_freq'
+    'xclip -selection clipboard <<<"" && $ANKI_SCRIPT update_sentence'
+    '$ANKI_SCRIPT update_sentence'
+    '$ANKI_SCRIPT copy_context'
+    '$ANKI_SCRIPT copy_extra_field'
+    '$ANKI_SCRIPT browse_curr'
+)
+
+eval "$(printf "%s\n" "${cmds[@]}" | dmenu)"

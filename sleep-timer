@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -t) MINUTES="$2"; shift ;;
+        -i) IMAGE="$2"; shift ;;
+    esac
+    shift
+done
+
+feh "${IMAGE:-"$(xdg-user-dir DESKTOP)"/black.jpg}" &
+sleep $((60 * "${MINUTES:-60}"))
+systemctl suspend

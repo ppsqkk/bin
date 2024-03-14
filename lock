@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+e=xkb:us::eng
+p=false
+m=unmute
+
+onlock () {
+    e="$(ibus engine)"
+    p="$(dunstctl is-paused)"
+    m="$(amixer get Master | grep -q '\[on]' && echo unmute || echo mute)"
+
+    ibus engine xkb:us::eng
+    dunstctl set-paused true
+    amixer set Master mute
+}
+
+onunlock () {
+    ibus engine "$e"
+    dunstctl set-paused "$p"
+    amixer set Master "$m"
+}
+
+onlock
+
+tmp="$(mktemp --suffix=.png)"
+flameshot full -r >"$tmp"
+magick \
+"$tmp" -blur 10x5 \
+"$(xdg-user-dir DESKTOP)"/lock.png -gravity center \
+-composite "$tmp"
+i3lock -nue -i "$tmp"
+rm -f "$tmp"
+
+onunlock

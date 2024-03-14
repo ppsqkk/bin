@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+output=$(xrandr | grep 'primary' | awk '{ print $1 }')
+touchpad=$(xinput | grep 'Touchpad' | perl -n -e'/id=(\d+)/ && print $1')
+
+declare -A matrices=(
+    ['normal']='1 0 0 0 1 0 0 0 1'
+    ['left']='0 -1 0 1 0 0 0 0 1'
+    ['inverted']='-1 0 0 0 -1 0 0 0 1'
+    ['right']='0 1 0 -1 0 0 0 0 1'
+)
+
+orientation="${1:-normal}"
+xrandr --output "$output" --rotate "$orientation"
+xinput set-prop "$touchpad" 'Coordinate Transformation Matrix' "${matrices["$orientation"]}"
